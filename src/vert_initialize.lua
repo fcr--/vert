@@ -147,19 +147,21 @@ function M.init(opts)
 
   local activate_script_params = {}
 
-  local LUA_URI, LUA_VERSION, LUA_NAME_PREFIX, LUA_COMPAT_VERSION
+  local LUA_URI, LUA_VERSION, LUA_FILENAME, LUA_DIR_PREFIX, LUA_COMPAT_VERSION
   local lua_build_function
 
   if (opts["lua-source"] or "lua") == "lua" then
     LUA_VERSION        = opts["lua-version"] or "5.3.5"
     LUA_URI            = "http://www.lua.org/ftp/"
-    LUA_NAME_PREFIX    = "lua-"
+    LUA_DIR_PREFIX     = "lua-" .. LUA_VERSION
+    LUA_FILENAME       = LUA_DIR_PREFIX .. ".tar.gz"
     LUA_COMPAT_VERSION = LUA_VERSION:match("^%d+%.%d+")
     lua_build_function = utils.build_lua
   elseif opts["lua-source"] == "luajit" then
     LUA_VERSION        = opts["lua-version"] or "2.1.0-beta3"
-    LUA_URI            = "https://luajit.org/download/"
-    LUA_NAME_PREFIX    = "LuaJIT-"
+    LUA_URI            = "https://repo.or.cz/luajit-2.0.git/snapshot/"
+    LUA_DIR_PREFIX     = "luajit-2.0-v" .. LUA_VERSION .. "-"
+    LUA_FILENAME       = "v" .. LUA_VERSION .. ".tar.gz"
     LUA_COMPAT_VERSION = "5.1"
     lua_build_function = utils.build_luajit
     activate_script_params.extra_path = ";$VERT/share/luajit-"..LUA_VERSION.."/?.lua"
@@ -172,7 +174,6 @@ function M.init(opts)
   local PLATFORM          = opts["platform"] or utils.get_os()
 
   local LUAROCKS_URI      = "http://luarocks.org/releases/"
-  local LUA_FILENAME      = LUA_NAME_PREFIX..LUA_VERSION..".tar.gz"
   local LUAROCKS_FILENAME = "luarocks-"..LUAROCKS_VERSION..".tar.gz"
   local BUILD_DIR         = DIRECTORY.."/build/"
   local CURRENT_DIR       = lfs.currentdir()
@@ -201,7 +202,7 @@ function M.init(opts)
   utils.run("tar -xvpf %s -C %s", BUILD_DIR..LUA_FILENAME, BUILD_DIR)
   utils.run("tar -xvpf %s -C %s", BUILD_DIR..LUAROCKS_FILENAME, BUILD_DIR)
 
-  local lua_dir = BUILD_DIR..LUA_NAME_PREFIX..LUA_VERSION
+  local lua_dir = BUILD_DIR..LUA_DIR_PREFIX
   local luarocks_dir = BUILD_DIR.."luarocks-"..LUAROCKS_VERSION
 
   lua_build_function(lua_dir, PLATFORM, DIRECTORY)

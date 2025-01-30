@@ -60,6 +60,21 @@ end
 
 function M.build_luajit(lua_dir, platform, top)
   local current_dir = lfs.currentdir()
+  -- luajit .tar.gz extracts to a directory containing the 7 first digits of the
+  -- git commit as a suffix:
+  local base_path, prefix = lua_dir:match "(.*/)(.*)"
+  local matches = {}
+  for item in lfs.dir(base_path) do
+    if item:find(prefix, 1, true) == 1 then
+      matches[#matches + 1] = item
+    end
+  end
+  M.ensure(#matches == 1, ("Only one match expected in %s, prefix=%s, matches={%s}"):format(
+    base_path, prefix, table.concat(matches, ", ")))
+
+  lua_dir = base_path .. matches[1]
+  print('lua_dir:', lua_dir)
+  M.run('ls -l')
   lfs.chdir(lua_dir)
 
   M.ensure(M.run("make"), "make luajit failed")
