@@ -159,7 +159,7 @@ function M.init(opts)
     lua_build_function = utils.build_lua
   elseif opts["lua-source"] == "luajit" then
     LUA_VERSION        = opts["lua-version"] or "2.1.0-beta3"
-    LUA_URI            = "https://repo.or.cz/luajit-2.0.git/snapshot/"
+    LUA_URI            = "https://repo.or.cz/w/luajit-2.0.git/snapshot/"
     LUA_DIR_PREFIX     = "luajit-2.0-v" .. LUA_VERSION .. "-"
     LUA_FILENAME       = "v" .. LUA_VERSION .. ".tar.gz"
     LUA_COMPAT_VERSION = "5.1"
